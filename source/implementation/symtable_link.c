@@ -49,3 +49,14 @@ int SymTable_getLength (SymTable_t oSymTable)
 	assert(oSymTable !=	NULL);
 	return oSymTable -> number_of_bind;
 }
+//maps the symtable to a function
+void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const void* pvValue, void* pvExtra), const void* pvExtra)
+{
+	assert(oSymTable != NULL);		
+	bind temp = oSymTable->head;
+	while(temp != NULL)
+	{
+		pfApply(temp->pcKey, temp->pvVale,pfApply );
+		temp = temp->next_bind;
+	}
+}
