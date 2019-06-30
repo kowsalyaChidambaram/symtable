@@ -56,7 +56,7 @@ void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const 
 	bind temp = oSymTable->head;
 	while(temp != NULL)
 	{
-		pfApply(temp->pcKey, temp->pvVale,pfApply );
+		pfApply(temp->pcKey, temp->pvVale,"");
 		temp = temp->next_bind;
 	}
 }
