@@ -19,7 +19,7 @@ Repos skeleton :
 	./source/test/
 		./source/test/symtable_test.c 
 
-#its hard to comment what every file has and does, suit yourself ;)
+its hard to comment what every file has and does, suit yourself ;)
 
 details to build
 > cd build

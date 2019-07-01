@@ -10,3 +10,5 @@ void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const 
 int SymTable_contains(SymTable_t oSymTable, const char* pcKey);
 int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue);
 void* SymTable_get(SymTable_t oSymTable, const char* pcKey);
+void *SymTable_remove (SymTable_t oSymTable, const char *pcKey);
+void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvValue);

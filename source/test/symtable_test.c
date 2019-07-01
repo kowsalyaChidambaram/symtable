@@ -36,14 +36,15 @@ void test_SymTable_map(SymTable_t oSymTable)
 	if(SymTable_getLength(oSymTable) == 0 )
 		printf("\n\ntest success: founds the length of the symtable to be zero\n");
 	else	
-		printf("\n\ntest success: maps the specified funtion to the map \n");
+		printf("\n\ntest success: test_SymTable_map right flow\n");
 }
 //tests thefunction "test_SymTable_contains"
 void test_SymTable_contains(SymTable_t oSymTable)
 {
+	assert(oSymTable != NULL);
 	int contains_returns;
 	if ( (SymTable_contains(oSymTable, "key") == 0)   && (SymTable_contains(oSymTable, "xyz") == 1)) //"key" no such key is in symtable, key "xyz" is in symtable*
-		printf("test success: SymTable_contain flows good\n");
+		printf("test success: SymTable_contain right flow\n");
 	else
 		printf("test fail: SymTable_contain doesn't flow good\n");
 }
@@ -64,6 +65,7 @@ char* make_value(int i)
 //tests thefunction "test_SymTable_put"
 void test_SymTable_put(SymTable_t oSymTable)
 {
+	assert(oSymTable != NULL);
 	int put_returns;
 	int count = 4; // 65521;
 	if(SymTable_getLength(oSymTable) != 0 ) //so far the symtable is a skeleton of length 0
@@ -95,17 +97,18 @@ void test_SymTable_put(SymTable_t oSymTable)
 		printf("test fails: length doesnt match for long run\n");
 		return;
 	}
-	printf("test success: puts executed successfully \n");
+	printf("test success: test_SymTable_put right flow\n");
 	
 }
 //tests thefunction "test_SymTable_get"
 void test_SymTable_get(SymTable_t oSymTable)
 {
+	assert(oSymTable != NULL);
 	void* temp;
 	temp = SymTable_get(oSymTable, "xyz"); //looks for the key of an old key 
 	if ( temp == NULL)
 	{
-		printf("test fails1: value doesn't match or wrong flow \n");
+		printf("test fails: value doesn't match or wrong flow \n");
 		return;
 	}
 	if( strcmp((char*) temp, "double"))
@@ -116,10 +119,33 @@ void test_SymTable_get(SymTable_t oSymTable)
 	temp = SymTable_get(oSymTable,"symtable"); //sad the key symtable isnt in the symtable ;)
 	if( temp != NULL )
 	{
-		printf("test fails3: value doesn't match or wrong flow \n");		
+		printf("test fails: value doesn't match or wrong flow \n");		
 		return;
 	}
-	printf("test succeess : right flow \n");
+	printf("test succeess : test_SymTable_get right flow \n");
+}
+//tests the functions "SymTable_remove" 
+void test_SymTable_remove (SymTable_t oSymTable)
+{
+	SymTable_remove(oSymTable, "abc");
+}
+//tests the functions "SymTable_replace"
+void test_SymTable_replace (SymTable_t oSymTable)
+{
+	void *temp;
+	temp = SymTable_replace(oSymTable, "xyz", "unsigned_"); // Available key "xyz" expected to return a opaque pointer
+	if (temp == NULL )
+	{
+		printf("test fails: pointer doesn't reflect or wrong flow \n");		
+		return;
+	}
+	temp = SymTable_replace(oSymTable, "abc", "unsigned_"); // new key "abc" expected to return a null
+	if (temp != NULL )
+	{
+		printf("test fails: pointer doesn't reflect or wrong flow \n");		
+		return;
+	}
+	printf("test succeess : test_SymTable_replace right flow \n");
 }
 //test all the functions in one go
 int main()
@@ -131,6 +157,8 @@ int main()
 	//test_SymTable_map(oSymTable); this is included in the test_SymTable_put for easy view ;)
 	test_SymTable_get(oSymTable);
 	test_SymTable_contains(oSymTable);
+	test_SymTable_remove(oSymTable);
+	test_SymTable_replace(oSymTable);
 	//test_SymTable_free(oSymTable);
 	
 }

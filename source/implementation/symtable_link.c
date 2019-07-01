@@ -116,3 +116,29 @@ void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 	}
 	return NULL;
 }
+
+void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
+{
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
+	
+}
+void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvValue)
+{
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
+	assert(	pvValue!= NULL); //remind me about assert tradition
+	bind temp = oSymTable->head;
+	bind opaque_ptr;
+	while( temp != NULL)
+	{
+		if(strcmp(temp->pcKey, pcKey) == 0)
+		{
+			opaque_ptr = temp->pvValue; //document states about an opaque pointer to the lost vale;)
+			temp->pvValue = pvValue;
+			return opaque_ptr;
+		}
+		temp = temp->next_bind;
+	}
+	return NULL; //returns NULL if key not found
+}
