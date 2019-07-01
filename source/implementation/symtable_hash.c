@@ -7,6 +7,8 @@ typedef struct bindings
 	const void* pvValue;
 	struct bindings* next_bind;
 }*bind;
+int bucket_size[] = {509, 1021, 2039, 4093, 8191, 16381, 32749, 65521};
+static int size = 0;
 //definition of strructure for a Symtable
 struct SymTable
 {
@@ -19,8 +21,8 @@ SymTable_t SymTable_new (void)
 	SymTable_t temp = (SymTable_t) malloc (sizeof(SymTable_t));
 	assert(temp != NULL); //memory insufficient
 	temp->number_of_bucket = 0; 	//set the length to 0 by default.
-	temp->bucket_start = (bind *) calloc(509 , sizeof(bind));
-	for(int i=0; i < 509 ; i++)
+	temp->bucket_start = (bind *) calloc(bucket_size[size] , sizeof(bind));
+	for(int i=0; i < bucket_size[size] ; i++)
 		temp->bucket_start[i] = NULL; //make all the buckets to null to avoid tension
 	return temp; 
 }
@@ -29,7 +31,7 @@ void SymTable_free (SymTable_t oSymTable)
 {
 	assert(oSymTable != NULL );
 	bind temp, previous;
-	for(int i=0; i< 509; i++)
+	for(int i=0; i< bucket_size[size]; i++)
 	{
 		temp = oSymTable->bucket_start[i];
 		while( temp!= NULL)
@@ -57,7 +59,7 @@ void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const 
     assert(pvExtra != NULL);
     assert(pfApply != NULL);
     bind temp;
-    for (int i=0; i < 509 ; i++ )
+    for (int i=0; i < bucket_size[size] ; i++ )
     {
     	temp = oSymTable->bucket_start[i];
     	while(temp != NULL)
@@ -72,7 +74,7 @@ int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	int i =SymTable_hash(pcKey, 509); //call SymTable_hash, this returns the bucket number
+	int i =SymTable_hash(pcKey, bucket_size[size]); //call SymTable_hash, this returns the bucket number
 	bind temp = oSymTable->bucket_start[i]; //pointer to the firstt bind in the bucket
 	while(temp !=NULL)
 	{
@@ -88,7 +90,7 @@ int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	assert(pvValue != NULL);
-	int i = SymTable_hash(pcKey, 509);
+	int i = SymTable_hash(pcKey, bucket_size[size]);
 	bind temp;
 	if(oSymTable->bucket_start[i] == NULL)
 	{
@@ -131,7 +133,7 @@ void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	int i = SymTable_hash(pcKey, 509);
+	int i = SymTable_hash(pcKey, bucket_size[size]);
 	bind temp = oSymTable->bucket_start[i]; 
 	while( temp !=NULL) //lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
 	{
@@ -146,7 +148,7 @@ void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	int i = SymTable_hash(pcKey, 509); 
+	int i = SymTable_hash(pcKey, bucket_size[size]); 
 	bind temp = oSymTable->bucket_start[i];
 	bind prev = NULL;	//takes the head pointer of the table, if its the head and previous just change the sytable->head to next bind in queue
 	while(temp != NULL )
@@ -178,7 +180,7 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	assert(pvValue != NULL);
-	int i = SymTable_hash(pcKey, 509); 
+	int i = SymTable_hash(pcKey, bucket_size[size]); 
 	bind temp = oSymTable->bucket_start[i];
 	while(temp != NULL )
 	{
@@ -192,4 +194,57 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 	}
 	//remind me about assert tradition
 	return NULL; //returns NULL if key not found
+} //trial rehash
+void rehash(SymTable_t oSymTable)
+{
+	size++;
+	assert(oSymTable != NULL);
+	SymTable_t new_oSymTable;
+	new_oSymTable = SymTable_new(); //creates an individual symtable
+	for(int i=0; i < bucket_size[size - 1] ; i++) 
+	{
+		bind temp = oSymTable->bucket_start[i]; //old table
+		while(temp != NULL)
+		{
+			int index = SymTable_hash(temp->pcKey, bucket_size[size]);
+			if(new_oSymTable->bucket_start[index] == NULL) //fresh bucket
+			{
+				bind node = (bind) malloc(sizeof(struct bindings));
+				node->pvValue = temp->pvValue;
+				node->pcKey = temp->pcKey;
+				node->next_bind = NULL;
+				new_oSymTable->bucket_start[index] = node;
+			}
+			else //filled bucket
+			{
+				bind temp1 = new_oSymTable->bucket_start[index]; //bucket in new table
+				bind prev = NULL;
+				while(temp1 != NULL)
+				{
+					prev = temp1;
+					temp1 = temp1->next_bind;
+				}
+				bind node = (bind) malloc(sizeof(struct bindings));
+				node->pcKey = temp->pcKey;
+				node->pvValue = temp->pvValue;
+				node->next_bind = NULL;
+				prev->next_bind = node;				
+			}
+			temp = temp->next_bind; //increment bind in old table
+		}
+	}
+	
+	bind temp, next;
+	for (int i = 0; i< 	bucket_size[size - 1] ; i++ ) //free space occupied by old symtable
+	{
+		temp = 	oSymTable->bucket_start[i];
+		while(temp != NULL) 
+		{
+			next =  temp->next_bind;
+			free(temp);
+		}
+	}
+	free(oSymTable->bucket_start);
+	oSymTable->bucket_start = new_oSymTable->bucket_start;
+	free(new_oSymTable);
 }
