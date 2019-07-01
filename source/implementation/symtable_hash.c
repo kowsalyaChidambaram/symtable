@@ -10,15 +10,19 @@ typedef struct bindings
 //definition of strructure for a Symtable
 struct SymTable
 {
-	bind *head;
+	bind *hash_start;
 	int number_of_bind; //to store total no of binds
 };
 //Creates a new Symtable object returns NULL if no enough memory or return the pointer to the Symtable.
 SymTable_t SymTable_new (void)
 {
-	
-	//set the length to 0 by default.
-	return NULL; //memory insufficient
+	SymTable_t temp = (SymTable_t) malloc (sizeof(SymTable_t));
+	assert(temp != NULL); //memory insufficient
+	temp->number_of_bind = 0; 	//set the length to 0 by default.
+	temp->hash_start = (bind *) calloc(509 , sizeof(bind));
+	for(int i=0; i < 509 ; i++)
+		temp->hash_start[i] = NULL; //make all the buckets to null to avoid tension
+	return temp; 
 }
 //Frees the memory occupied by each key and each bind.
 void SymTable_free (SymTable_t oSymTable)
