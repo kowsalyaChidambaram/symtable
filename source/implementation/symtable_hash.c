@@ -53,7 +53,19 @@ int SymTable_getLength (SymTable_t oSymTable)
 //maps the symtable to a function
 void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const void* pvValue, void* pvExtra), const void* pvExtra)
 {
-	return;
+	assert(oSymTable != NULL);
+    assert(pvExtra != NULL);
+    assert(pfApply != NULL);
+    bind temp;
+    for (int i=0; i < 509 ; i++ )
+    {
+    	temp = oSymTable->bucket_start[i];
+    	while(temp != NULL)
+    	{
+    		pfApply(temp->pcKey, temp->pvValue, (void*)pvExtra);
+            temp = temp->next_bind;
+    	}
+    }
 }
 //tries hard to locate the key in the bindings; returns 0 if failed, else returns 1 
 int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
