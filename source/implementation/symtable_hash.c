@@ -62,7 +62,7 @@ void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const 
     	temp = oSymTable->bucket_start[i];
     	while(temp != NULL)
     	{
-    		pfApply(temp->pcKey, temp->pvValue, (void*)pvExtra);
+    		pfApply(temp->pcKey, temp->pvValue,"");
             temp = temp->next_bind;
     	}
     }
