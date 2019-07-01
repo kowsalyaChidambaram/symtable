@@ -73,7 +73,7 @@ int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
 			return 1;
 		temp = temp->next_bind;
 	}
-	return 0;
+	return 0; //key not found
 }
 //this creates a new bind and returns 1 only if the key is not found in the table and memory can hold it back itself.
 int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
@@ -93,7 +93,7 @@ int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 		oSymTable->number_of_bind += 1;	
 		return 1;
 	}
-	return 0;
+	return 0; //key not found
 }
 //tries to patch up the value associated with the key proposed if not found the respective matching key in the table, returns NULL, else value meets key ;)
 void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
@@ -114,9 +114,9 @@ void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 			}
 		}
 	}
-	return NULL;
+	return NULL; //key not found
 }
-
+//removes the key if found and returns the opaque pointer else returns NULL
 void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 {
 	assert(oSymTable != NULL);
@@ -147,6 +147,7 @@ void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 	}
 	return NULL; //key not found
 }
+//replaces the key if found and returns the opaque pointer else returns NULL
 void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvValue)
 {
 	assert(oSymTable != NULL);
