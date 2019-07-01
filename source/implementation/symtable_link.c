@@ -121,7 +121,31 @@ void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
+	bind temp = oSymTable->head;
+	bind opaque_ptr; //the opaque pointer
+	bind previous = oSymTable->head; //takes the head pointer of the table, if its the head and previous just change the sytable->head to next bind in queue
 	
+	while(temp != NULL )
+	{
+		if( strcmp(temp->pcKey, pcKey) ==0 ) //look for the key in the table
+		{
+			opaque_ptr = temp->pvValue; //this could be the head pointer
+			if(previous == oSymTable->head)
+			{
+				oSymTable->head = previous->next_bind;
+			}
+			else
+			{
+				previous->next_bind = temp->next_bind;
+			}
+			oSymTable->number_of_bind -= 1 ;
+			free(temp); 
+			return opaque_ptr;
+		}
+		previous = temp;
+		temp = temp->next_bind;
+	}
+	return NULL; //key not found
 }
 void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvValue)
 {
