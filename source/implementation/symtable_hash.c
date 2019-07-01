@@ -131,7 +131,14 @@ void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	//lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
+	int i = SymTable_hash(pcKey, 509);
+	bind temp = oSymTable->bucket_start[i]; 
+	while( temp !=NULL) //lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
+	{
+		if (strcmp(temp->pcKey, pcKey) == 0)
+			return temp->pvValue;
+		temp = temp->next_bind;
+	}
 	return NULL; //key not found
 }
 //removes the key if found and returns the opaque pointer else returns NULL
