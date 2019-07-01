@@ -178,7 +178,18 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	assert(pvValue != NULL);
+	int i = SymTable_hash(pcKey, 509); 
+	bind temp = oSymTable->bucket_start[i];
+	while(temp != NULL )
+	{
+		if (strcmp(temp->pcKey, pcKey) == 0 ) //look for the key in the table
+		{
+			void* opaque_pointer = temp->pvValue;  //document states about an opaque pointer to the lost vale;
+			temp->pvValue = pvValue;		
+			return opaque_pointer;
+		}
+		temp = temp->next_bind;
+	}
 	//remind me about assert tradition
-	  //document states about an opaque pointer to the lost vale;
 	return NULL; //returns NULL if key not found
 }
