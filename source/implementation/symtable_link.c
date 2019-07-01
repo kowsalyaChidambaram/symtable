@@ -3,7 +3,7 @@
 typedef struct bindings
 {
 	const char* pcKey;
-	const void* pvVale;
+	const void* pvValue;
 	struct bindings* next_bind;
 }*bind;
 //definition of strructure for a Symtable
@@ -33,7 +33,7 @@ void SymTable_free (SymTable_t oSymTable)
 {
 	assert(oSymTable != NULL );
 	bind temp, previous;
-	previous = oSymTable -> head;
+	previous = oSymTable->head;
 	while ( previous != NULL )
 	{
 		temp = previous;
@@ -47,7 +47,7 @@ void SymTable_free (SymTable_t oSymTable)
 int SymTable_getLength (SymTable_t oSymTable)
 {
 	assert(oSymTable !=	NULL);
-	return oSymTable -> number_of_bind;
+	return oSymTable->number_of_bind;
 }
 //maps the symtable to a function
 void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const void* pvValue, void* pvExtra), const void* pvExtra)
@@ -56,7 +56,63 @@ void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const 
 	bind temp = oSymTable->head;
 	while(temp != NULL)
 	{
-		pfApply(temp->pcKey, temp->pvVale,"");
+		pfApply(temp->pcKey, temp->pvValue,"");
 		temp = temp->next_bind;
 	}
+}
+//tries hard to locate the key in the bindings; returns 0 if failed, else returns 1 
+int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
+{
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL); //can always check the length of the symtable and return 0 on the second line, beside the while condition do the same
+//lesson learnt: just continue the coding ;) quit over thinking
+	bind temp = oSymTable->head;
+	while(temp != NULL)
+	{
+		if(strcmp(temp->pcKey, pcKey) == 0) //if equals then return positive
+			return 1;
+		temp = temp->next_bind;
+	}
+	return 0;
+}
+//this creates a new bind and returns 1 only if the key is not found in the table and memory can hold it back itself.
+int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
+{
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
+	assert(pvValue != NULL);
+	if(SymTable_contains(oSymTable, pcKey) == 0)
+	{
+		bind new_bind = (bind) malloc(sizeof(struct bindings));
+		if(new_bind == NULL)
+			return 0;
+		new_bind->pcKey = pcKey;
+		new_bind->pvValue = pvValue;
+		new_bind->next_bind = oSymTable->head;
+		oSymTable->head = new_bind;
+		oSymTable->number_of_bind += 1;	
+		return 1;
+	}
+	return 0;
+}
+//tries to patch up the value associated with the key proposed if not found the respective matching key in the table, returns NULL, else value meets key ;)
+void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
+{
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
+	if(  SymTable_getLength(oSymTable)!=0) 
+	{
+		if( SymTable_contains(oSymTable, pcKey) !=0 ) //lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
+		{
+			
+			bind temp = oSymTable->head;
+			for(int i = 0; i < oSymTable->number_of_bind; i++)
+			{
+				if(strcmp(temp->pcKey,pcKey ) == 0 )
+					return temp->pvValue;
+				temp = temp->next_bind;
+			}
+		}
+	}
+	return NULL;
 }
