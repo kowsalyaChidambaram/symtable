@@ -41,8 +41,11 @@ void test_SymTable_map(SymTable_t oSymTable)
 //tests thefunction "test_SymTable_contains"
 void test_SymTable_contains(SymTable_t oSymTable)
 {
-	
-	//SymTable_contains();
+	int contains_returns;
+	if ( (SymTable_contains(oSymTable, "key") == 0)   && (SymTable_contains(oSymTable, "xyz") == 1)) //"key" no such key is in symtable, key "xyz" is in symtable*
+		printf("test success: SymTable_contain flows good\n");
+	else
+		printf("test fail: SymTable_contain doesn't flow good\n");
 }
 //aux function t0 make keys here 
 char* make_Key(int i)
@@ -62,7 +65,7 @@ char* make_value(int i)
 void test_SymTable_put(SymTable_t oSymTable)
 {
 	int put_returns;
-	int count = 65521;
+	int count = 100; // 65521;
 	if(SymTable_getLength(oSymTable) != 0 ) //so far the symtable is a skeleton of length 0
 		printf("test fails: initial Symtable has 0 binds in it\n");
 	put_returns = SymTable_put(oSymTable,"box", "int"); //new bind with int value
@@ -92,7 +95,7 @@ void test_SymTable_put(SymTable_t oSymTable)
 		printf("test fails: length doesnt match for long run\n");
 		return;
 	}
-	printf("test success2: puts executed successfully \n");
+	printf("test success: puts executed successfully \n");
 	
 }
 //tests thefunction "test_SymTable_get"
@@ -106,9 +109,10 @@ int main()
 	test_SymTable_new();
 	SymTable_t oSymTable = SymTable_new ();
 	test_SymTable_getLength(oSymTable);
-	//test_SymTable_free(oSymTable);
 	test_SymTable_put(oSymTable);
-	//test_SymTable_map(oSymTable);
-	//test_SymTable_get();
-	//test_SymTable_contains();
+	//test_SymTable_map(oSymTable); this is included in the test_SymTable_put for easy view ;)
+	//test_SymTable_get(oSymTable);
+	test_SymTable_contains(oSymTable);
+	//test_SymTable_free(oSymTable);
+	
 }
