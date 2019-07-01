@@ -88,6 +88,42 @@ int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	assert(pvValue != NULL);
+	int i = SymTable_hash(pcKey, 509);
+	bind temp;
+	if(oSymTable->bucket_start[i] == NULL)
+	{
+		bind node = (bind) malloc (sizeof(struct bindings));
+		if (node == NULL)
+			return 0; //no enough memory
+		node->pvValue = pvValue;
+		node->pcKey = pcKey;
+		node->next_bind= NULL;
+		oSymTable->bucket_start[i] = node;
+		oSymTable->number_of_bucket += 1;
+		return 1;
+	}
+	else
+	{
+		bind node = oSymTable->bucket_start[i]; //look in the hashed bucket, if found return 0
+		bind prev = NULL;
+		while ( node != NULL)
+		{
+			if( strcmp(node->pcKey, pcKey) == 0)
+				return 0;
+			prev = node;
+			node = node->next_bind;
+		}
+		//if not found create a new bind and point it to prev -> next
+		bind new_bind = (bind) malloc(sizeof(struct bindings));
+		if (new_bind ==NULL) //no enough space
+			return 0;
+		new_bind->pcKey = pcKey;
+		new_bind->pvValue = pvValue;
+		new_bind->next_bind = NULL;
+		oSymTable->number_of_bucket += 1 ;
+		prev->next_bind = new_bind;
+		return 1;	
+	}
 	return 0; //key not found
 }
 //tries to patch up the value associated with the key proposed if not found the respective matching key in the table, returns NULL, else value meets key ;)
