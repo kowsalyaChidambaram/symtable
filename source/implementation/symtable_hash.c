@@ -146,10 +146,30 @@ void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	//the opaque pointer
-	//takes the head pointer of the table, if its the head and previous just change the sytable->head to next bind in queue
-	//look for the key in the table
-	//this could be the head pointer
+	int i = SymTable_hash(pcKey, 509); 
+	bind temp = oSymTable->bucket_start[i];
+	bind prev = NULL;	//takes the head pointer of the table, if its the head and previous just change the sytable->head to next bind in queue
+	while(temp != NULL )
+	{
+		if (strcmp(temp->pcKey, pcKey) == 0 ) //look for the key in the table
+		{
+			void* opaque_pointer = temp->pvValue;//the opaque_pointer
+			if(temp == oSymTable->bucket_start[i]) //this could be the head pointer
+			{
+				 oSymTable->bucket_start[i] = temp->next_bind;
+				
+			}
+			else
+			{
+					prev->next_bind = temp->next_bind;
+			}		
+		 	oSymTable->number_of_bucket -= 1;
+			free(temp);
+			return opaque_pointer;
+		}
+		prev = temp;
+		temp = temp->next_bind;
+	}
 	return NULL;//key not found
 }
 //replaces the key if found and returns the opaque pointer else returns NULL
@@ -158,7 +178,18 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	assert(pvValue != NULL);
+	int i = SymTable_hash(pcKey, 509); 
+	bind temp = oSymTable->bucket_start[i];
+	while(temp != NULL )
+	{
+		if (strcmp(temp->pcKey, pcKey) == 0 ) //look for the key in the table
+		{
+			void* opaque_pointer = temp->pvValue;  //document states about an opaque pointer to the lost vale;
+			temp->pvValue = pvValue;		
+			return opaque_pointer;
+		}
+		temp = temp->next_bind;
+	}
 	//remind me about assert tradition
-	  //document states about an opaque pointer to the lost vale;
 	return NULL; //returns NULL if key not found
 }
