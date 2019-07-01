@@ -100,15 +100,19 @@ void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	if(  SymTable_getLength(oSymTable)!=0 && SymTable_contains(oSymTable, pcKey) !=0 ) //lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
+	if(  SymTable_getLength(oSymTable)!=0) 
 	{
-		bind temp = oSymTable->head;
-		for(int i = 0; i < oSymTable->number_of_bind; i++)
+		if( SymTable_contains(oSymTable, pcKey) !=0 ) //lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
 		{
-			if(strcmp(temp->pcKey,pcKey ) == 0 )
-				return temp->pvValue;
+			
+			bind temp = oSymTable->head;
+			for(int i = 0; i < oSymTable->number_of_bind; i++)
+			{
+				if(strcmp(temp->pcKey,pcKey ) == 0 )
+					return temp->pvValue;
+				temp = temp->next_bind;
+			}
 		}
-		temp = temp->next_bind;
 	}
 	return NULL;
 }

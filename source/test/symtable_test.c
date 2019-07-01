@@ -65,7 +65,7 @@ char* make_value(int i)
 void test_SymTable_put(SymTable_t oSymTable)
 {
 	int put_returns;
-	int count = 100; // 65521;
+	int count = 4; // 65521;
 	if(SymTable_getLength(oSymTable) != 0 ) //so far the symtable is a skeleton of length 0
 		printf("test fails: initial Symtable has 0 binds in it\n");
 	put_returns = SymTable_put(oSymTable,"box", "int"); //new bind with int value
@@ -101,7 +101,25 @@ void test_SymTable_put(SymTable_t oSymTable)
 //tests thefunction "test_SymTable_get"
 void test_SymTable_get(SymTable_t oSymTable)
 {
-	//SymTable_get();
+	void* temp;
+	temp = SymTable_get(oSymTable, "xyz"); //looks for the key of an old key 
+	if ( temp == NULL)
+	{
+		printf("test fails1: value doesn't match or wrong flow \n");
+		return;
+	}
+	if( strcmp((char*) temp, "double"))
+	{
+		printf("test fails: value doesn't match or wrong flow \n");
+		return;
+	}
+	temp = SymTable_get(oSymTable,"symtable"); //sad the key symtable isnt in the symtable ;)
+	if( temp != NULL )
+	{
+		printf("test fails3: value doesn't match or wrong flow \n");		
+		return;
+	}
+	printf("test succeess : right flow \n");
 }
 //test all the functions in one go
 int main()
@@ -111,7 +129,7 @@ int main()
 	test_SymTable_getLength(oSymTable);
 	test_SymTable_put(oSymTable);
 	//test_SymTable_map(oSymTable); this is included in the test_SymTable_put for easy view ;)
-	//test_SymTable_get(oSymTable);
+	test_SymTable_get(oSymTable);
 	test_SymTable_contains(oSymTable);
 	//test_SymTable_free(oSymTable);
 	
