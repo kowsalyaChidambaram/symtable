@@ -70,6 +70,8 @@ void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const 
 //tries hard to locate the key in the bindings; returns 0 if failed, else returns 1 
 int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
 {
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
 	 //can always check the length of the symtable and return 0 on the second line, beside the while condition do the same
 //lesson learnt: just continue the coding ;) quit over thinking
  //if equals then return positive
@@ -78,17 +80,24 @@ int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
 //this creates a new bind and returns 1 only if the key is not found in the table and memory can hold it back itself.
 int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 {
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
+	assert(pvValue != NULL);
 	return 0; //key not found
 }
 //tries to patch up the value associated with the key proposed if not found the respective matching key in the table, returns NULL, else value meets key ;)
 void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 {
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
 	//lets breakdown, first make sure the key is in the table then dig depper into to get the value;)
 	return NULL; //key not found
 }
 //removes the key if found and returns the opaque pointer else returns NULL
 void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 {
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
 	//the opaque pointer
 	//takes the head pointer of the table, if its the head and previous just change the sytable->head to next bind in queue
 	//look for the key in the table
@@ -98,7 +107,10 @@ void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 //replaces the key if found and returns the opaque pointer else returns NULL
 void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvValue)
 {
-	 //remind me about assert tradition
-	  //document states about an opaque pointer to the lost vale;)
-	  return NULL; //returns NULL if key not found
+	assert(oSymTable != NULL);
+	assert(pcKey != NULL);
+	assert(pvValue != NULL);
+	//remind me about assert tradition
+	  //document states about an opaque pointer to the lost vale;
+	return NULL; //returns NULL if key not found
 }
