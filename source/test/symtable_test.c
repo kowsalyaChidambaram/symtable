@@ -172,4 +172,5 @@ int main()
 	test_SymTable_contains(oSymTable);
 	test_SymTable_remove(oSymTable);
 	test_SymTable_replace(oSymTable);
+	test_SymTable_free(oSymTable);
 }

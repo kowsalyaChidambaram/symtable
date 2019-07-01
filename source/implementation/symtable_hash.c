@@ -10,29 +10,45 @@ typedef struct bindings
 //definition of strructure for a Symtable
 struct SymTable
 {
-	bind *hash_start;
-	int number_of_bind; //to store total no of binds
+	bind *bucket_start;
+	int number_of_bucket; //to store total no of binds
 };
 //Creates a new Symtable object returns NULL if no enough memory or return the pointer to the Symtable.
 SymTable_t SymTable_new (void)
 {
 	SymTable_t temp = (SymTable_t) malloc (sizeof(SymTable_t));
 	assert(temp != NULL); //memory insufficient
-	temp->number_of_bind = 0; 	//set the length to 0 by default.
-	temp->hash_start = (bind *) calloc(509 , sizeof(bind));
+	temp->number_of_bucket = 0; 	//set the length to 0 by default.
+	temp->bucket_start = (bind *) calloc(509 , sizeof(bind));
 	for(int i=0; i < 509 ; i++)
-		temp->hash_start[i] = NULL; //make all the buckets to null to avoid tension
+		temp->bucket_start[i] = NULL; //make all the buckets to null to avoid tension
 	return temp; 
 }
 //Frees the memory occupied by each key and each bind.
 void SymTable_free (SymTable_t oSymTable)
 {
+	assert(oSymTable != NULL );
+	bind temp, previous;
+	for(int i=0; i< 509; i++)
+	{
+		temp = oSymTable->bucket_start[i];
+		while( temp!= NULL)
+		{
+			previous = temp;
+			temp = temp->next_bind;
+			free(previous->pcKey);
+			free(previous);
+		}
+	}
+	free(oSymTable->bucket_start);
+	free(oSymTable);
 	return;
 }
 //returns the length of the symtable
 int SymTable_getLength (SymTable_t oSymTable)
 {
-	return -1;
+	assert(oSymTable != NULL);
+    return oSymTable->number_of_bucket;
 }
 //maps the symtable to a function
 void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const void* pvValue, void* pvExtra), const void* pvExtra)
