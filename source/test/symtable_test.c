@@ -167,7 +167,7 @@ int main()
 	SymTable_t oSymTable = SymTable_new ();
 	test_SymTable_getLength(oSymTable);
 	test_SymTable_put(oSymTable);
-	//test_SymTable_map(oSymTable); //this is included in the test_SymTable_put for easy view ;)
+	test_SymTable_map(oSymTable); //this is included in the test_SymTable_put for easy view ;)
 	test_SymTable_get(oSymTable);
 	test_SymTable_contains(oSymTable);
 	test_SymTable_remove(oSymTable);
