@@ -72,10 +72,15 @@ int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
 {
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
-	 //can always check the length of the symtable and return 0 on the second line, beside the while condition do the same
-//lesson learnt: just continue the coding ;) quit over thinking
- //if equals then return positive
- return 0; //key not found
+	int i =SymTable_hash(pcKey, 509); //call SymTable_hash, this returns the bucket number
+	bind temp = oSymTable->bucket_start[i]; //pointer to the firstt bind in the bucket
+	while(temp !=NULL)
+	{
+		if( strcmp(temp->pcKey, pcKey) ==0) //if equals then return positive
+			return 1;
+		temp = temp->next_bind;
+	}
+	return 0; //key not found
 }
 //this creates a new bind and returns 1 only if the key is not found in the table and memory can hold it back itself.
 int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
