@@ -1,5 +1,4 @@
 #include"symtable.h"
-#include<time.h>
 //test the function "SymTable_new"
 void test_SymTable_new()
 {
