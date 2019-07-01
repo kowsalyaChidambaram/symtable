@@ -66,11 +66,12 @@ void test_SymTable_put(SymTable_t oSymTable)
 {
 	assert(oSymTable != NULL);
 	int put_returns;
-	int count = 4; // 65521;
+	int count = 65521;
 	if(SymTable_getLength(oSymTable) != 0 ) //so far the symtable is a skeleton of length 0
 		printf("test fails: SymTable_put, initial Symtable has 0 binds in it\n");
 	put_returns = SymTable_put(oSymTable,"box", "int"); //new bind with int value
 	put_returns = SymTable_put(oSymTable,"bottle", "float"); //new bind with float value
+	test_SymTable_map(oSymTable);
 	put_returns = SymTable_put(oSymTable,"xyz", "double"); //new bind with double value
 	put_returns = SymTable_put(oSymTable, make_Key(0), make_value(0)); // test aux functions for the loop ahead
 	put_returns = SymTable_put(oSymTable,"test", "double"); //duplicate values alters symtable
@@ -85,7 +86,6 @@ void test_SymTable_put(SymTable_t oSymTable)
 		printf("test fails: SymTable_put length doesnt match\n");
 		return;
 	}
-	test_SymTable_map(oSymTable);
 	for( int i = 1; i <= count  ; i++) 
 	{
 		put_returns = SymTable_put(oSymTable, make_Key(i), make_value(i));
@@ -172,4 +172,5 @@ int main()
 	test_SymTable_contains(oSymTable);
 	test_SymTable_remove(oSymTable);
 	test_SymTable_replace(oSymTable);
+	int end_time = clock();
 }
