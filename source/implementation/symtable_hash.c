@@ -104,10 +104,10 @@ int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 		oSymTable->number_of_bucket += 1;
 		return 1;
 	}
-	else
+	else 
 	{
 		bind node = oSymTable->bucket_start[i]; //look in the hashed bucket, if found return 0
-		bind prev = NULL;
+		bind prev = NULL; 
 		while ( node != NULL)
 		{
 			if( strcmp(node->pcKey, pcKey) == 0)
@@ -193,6 +193,7 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 		temp = temp->next_bind;
 	}
 	//remind me about assert tradition
+	rehash(oSymTable);
 	return NULL; //returns NULL if key not found
 } //trial rehash
 void rehash(SymTable_t oSymTable)
@@ -206,45 +207,10 @@ void rehash(SymTable_t oSymTable)
 		bind temp = oSymTable->bucket_start[i]; //old table
 		while(temp != NULL)
 		{
-			int index = SymTable_hash(temp->pcKey, bucket_size[size]);
-			if(new_oSymTable->bucket_start[index] == NULL) //fresh bucket
-			{
-				bind node = (bind) malloc(sizeof(struct bindings));
-				node->pvValue = temp->pvValue;
-				node->pcKey = temp->pcKey;
-				node->next_bind = NULL;
-				new_oSymTable->bucket_start[index] = node;
-			}
-			else //filled bucket
-			{
-				bind temp1 = new_oSymTable->bucket_start[index]; //bucket in new table
-				bind prev = NULL;
-				while(temp1 != NULL)
-				{
-					prev = temp1;
-					temp1 = temp1->next_bind;
-				}
-				bind node = (bind) malloc(sizeof(struct bindings));
-				node->pcKey = temp->pcKey;
-				node->pvValue = temp->pvValue;
-				node->next_bind = NULL;
-				prev->next_bind = node;				
-			}
+			SymTable_put( new_oSymTable, temp->pcKey, temp->pvValue);
 			temp = temp->next_bind; //increment bind in old table
 		}
 	}
-	
-	bind temp, next;
-	for (int i = 0; i< 	bucket_size[size - 1] ; i++ ) //free space occupied by old symtable
-	{
-		temp = 	oSymTable->bucket_start[i];
-		while(temp != NULL) 
-		{
-			next =  temp->next_bind;
-			free(temp);
-		}
-	}
-	free(oSymTable->bucket_start);
 	oSymTable->bucket_start = new_oSymTable->bucket_start;
 	free(new_oSymTable);
 }

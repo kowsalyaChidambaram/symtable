@@ -16,3 +16,4 @@ hash: $(include)hash.h $(implementation)hash.c $(include)symtable.h $(implementa
 clean:
 	rm linklist.out
 	rm hash.out
+
