@@ -16,6 +16,26 @@ struct SymTable
 	int number_of_bind; //to store total no of binds
 };
 //Creates a new Symtable object returns NULL if no enough memory or return the pointer to the Symtable.
+//trial rehash
+static void rehash(SymTable_t oSymTable)
+{
+	size++;
+	assert(oSymTable != NULL);
+	SymTable_t new_oSymTable;
+	new_oSymTable = SymTable_new(); //creates an individual symtable
+	for(int i=0; i < bucket_size[size - 1] ; i++) 
+	{
+		bind temp = oSymTable->bucket_start[i]; //old table
+		while(temp != NULL)
+		{
+			SymTable_put( new_oSymTable, temp->pcKey, temp->pvValue);
+			temp = temp->next_bind; //increment bind in old table
+		}
+	}
+	oSymTable->bucket_start = new_oSymTable->bucket_start;
+	oSymTable->number_of_bind = new_oSymTable->number_of_bind;
+	free(new_oSymTable);
+}
 SymTable_t SymTable_new (void)
 {
 	SymTable_t temp = (SymTable_t) malloc (sizeof(SymTable_t));
@@ -173,23 +193,4 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 	}
 	//remind me about assert tradition
 	return NULL; //returns NULL if key not found
-} //trial rehash
-void rehash(SymTable_t oSymTable)
-{
-	size++;
-	assert(oSymTable != NULL);
-	SymTable_t new_oSymTable;
-	new_oSymTable = SymTable_new(); //creates an individual symtable
-	for(int i=0; i < bucket_size[size - 1] ; i++) 
-	{
-		bind temp = oSymTable->bucket_start[i]; //old table
-		while(temp != NULL)
-		{
-			SymTable_put( new_oSymTable, temp->pcKey, temp->pvValue);
-			temp = temp->next_bind; //increment bind in old table
-		}
-	}
-	oSymTable->bucket_start = new_oSymTable->bucket_start;
-	oSymTable->number_of_bind = new_oSymTable->number_of_bind;
-	free(new_oSymTable);
-}
+} 

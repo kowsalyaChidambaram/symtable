@@ -5,15 +5,16 @@ test=../source/test/
 all: linklist hash
 
 linklist: $(include)symtable.h $(implementation)symtable_link.c $(test)symtable_test.c
-	gcc -I $(include) $(implementation)symtable_link.c $(test)symtable_test.c -w -Wall -o linklist.out
-	./linklist.out
+	gcc -I $(include) $(implementation)symtable_link.c $(test)symtable_test.c -w -Wall -o test_linked
 
 hash: $(include)hash.h $(implementation)hash.c $(include)symtable.h $(implementation)symtable_hash.c $(test)symtable_test.c
-	gcc -I $(include) $(implementation)hash.c $(implementation)symtable_hash.c $(test)symtable_test.c -w -Wall -o hash.out
-	./hash.out
+	gcc -I $(include) $(implementation)hash.c $(implementation)symtable_hash.c $(test)symtable_test.c -w -Wall -o test_hash 
 	
-
+test: all
+	./test_linked
+	./test_hash
+	
 clean:
-	rm linklist.out
-	rm hash.out
+	rm test_linked
+	rm test_hash
 
