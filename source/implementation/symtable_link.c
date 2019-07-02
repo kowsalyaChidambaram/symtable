@@ -95,7 +95,7 @@ int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 	}
 	return 0; //key not found
 }
-//tries to patch up the value associated with the key proposed if not found the respective matching key in the table, returns NULL, else value meets key ;)
+//tries to patch up the value associated with the key proposed if the respective matching key in the table not found , returns NULL, else value meets key ;)
 void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
 {
 	assert(oSymTable != NULL);

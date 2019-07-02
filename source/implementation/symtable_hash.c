@@ -13,14 +13,14 @@ static int size = 0;
 struct SymTable
 {
 	bind *bucket_start;
-	int number_of_bucket; //to store total no of binds
+	int number_of_bind; //to store total no of binds
 };
 //Creates a new Symtable object returns NULL if no enough memory or return the pointer to the Symtable.
 SymTable_t SymTable_new (void)
 {
 	SymTable_t temp = (SymTable_t) malloc (sizeof(SymTable_t));
 	assert(temp != NULL); //memory insufficient
-	temp->number_of_bucket = 0; 	//set the length to 0 by default.
+	temp->number_of_bind = 0; 	//set the length to 0 by default.
 	temp->bucket_start = (bind *) calloc(bucket_size[size] , sizeof(bind));
 	for(int i=0; i < bucket_size[size] ; i++)
 		temp->bucket_start[i] = NULL; //make all the buckets to null to avoid tension
@@ -50,7 +50,7 @@ void SymTable_free (SymTable_t oSymTable)
 int SymTable_getLength (SymTable_t oSymTable)
 {
 	assert(oSymTable != NULL);
-    return oSymTable->number_of_bucket;
+    return oSymTable->number_of_bind;
 }
 //maps the symtable to a function
 void SymTable_map(SymTable_t oSymTable, void(*pfApply)(const char* pcKey, const void* pvValue, void* pvExtra), const void* pvExtra)
@@ -75,6 +75,8 @@ int SymTable_contains(SymTable_t oSymTable, const char* pcKey)
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	int i =SymTable_hash(pcKey, bucket_size[size]); //call SymTable_hash, this returns the bucket number
+	if ( i > bucket_size[size] )
+		return 0; //definitely not there 
 	bind temp = oSymTable->bucket_start[i]; //pointer to the firstt bind in the bucket
 	while(temp !=NULL)
 	{
@@ -90,43 +92,25 @@ int SymTable_put(SymTable_t oSymTable, const char* pcKey, const void* pvValue)
 	assert(oSymTable != NULL);
 	assert(pcKey != NULL);
 	assert(pvValue != NULL);
+	if(	SymTable_contains(oSymTable, pcKey) !=0)
+		return 0;
 	int i = SymTable_hash(pcKey, bucket_size[size]);
-	bind temp;
-	if(oSymTable->bucket_start[i] == NULL)
+	if ( oSymTable->number_of_bind >= bucket_size[size])
+		rehash(oSymTable);
+	if (i <= bucket_size[size] ) 
 	{
-		bind node = (bind) malloc (sizeof(struct bindings));
+		bind temp = oSymTable->bucket_start[i];
+		bind node = (bind) malloc(sizeof(struct bindings));
 		if (node == NULL)
-			return 0; //no enough memory
-		node->pvValue = pvValue;
+			return 0; 	//no enough memory, be understanding :(
 		node->pcKey = pcKey;
-		node->next_bind= NULL;
+		node->pvValue = pvValue;
+		node->next_bind = temp;
 		oSymTable->bucket_start[i] = node;
-		oSymTable->number_of_bucket += 1;
-		return 1;
+		oSymTable->number_of_bind += 1;
+		return 1; //insert at begining of the list of a bucket
 	}
-	else 
-	{
-		bind node = oSymTable->bucket_start[i]; //look in the hashed bucket, if found return 0
-		bind prev = NULL; 
-		while ( node != NULL)
-		{
-			if( strcmp(node->pcKey, pcKey) == 0)
-				return 0;
-			prev = node;
-			node = node->next_bind;
-		}
-		//if not found create a new bind and point it to prev -> next
-		bind new_bind = (bind) malloc(sizeof(struct bindings));
-		if (new_bind ==NULL) //no enough space
-			return 0;
-		new_bind->pcKey = pcKey;
-		new_bind->pvValue = pvValue;
-		new_bind->next_bind = NULL;
-		oSymTable->number_of_bucket += 1 ;
-		prev->next_bind = new_bind;
-		return 1;	
-	}
-	return 0; //key not found
+	return 0; // extra return
 }
 //tries to patch up the value associated with the key proposed if not found the respective matching key in the table, returns NULL, else value meets key ;)
 void* SymTable_get(SymTable_t oSymTable, const char* pcKey)
@@ -157,15 +141,10 @@ void *SymTable_remove (SymTable_t oSymTable, const char *pcKey)
 		{
 			void* opaque_pointer = temp->pvValue;//the opaque_pointer
 			if(temp == oSymTable->bucket_start[i]) //this could be the head pointer
-			{
 				 oSymTable->bucket_start[i] = temp->next_bind;
-				
-			}
 			else
-			{
-					prev->next_bind = temp->next_bind;
-			}		
-		 	oSymTable->number_of_bucket -= 1;
+					prev->next_bind = temp->next_bind;	
+		 	oSymTable->number_of_bind -= 1;
 			free(temp);
 			return opaque_pointer;
 		}
@@ -193,7 +172,6 @@ void *SymTable_replace (SymTable_t oSymTable, const char *pcKey, const void *pvV
 		temp = temp->next_bind;
 	}
 	//remind me about assert tradition
-	rehash(oSymTable);
 	return NULL; //returns NULL if key not found
 } //trial rehash
 void rehash(SymTable_t oSymTable)
@@ -212,5 +190,6 @@ void rehash(SymTable_t oSymTable)
 		}
 	}
 	oSymTable->bucket_start = new_oSymTable->bucket_start;
+	oSymTable->number_of_bind = new_oSymTable->number_of_bind;
 	free(new_oSymTable);
 }
